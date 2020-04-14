@@ -1,8 +1,9 @@
 ## Interface: 11403
 ## Title: Flare NinjaList
-## Note: Log, rate and store notes on party members and get notified when a ninja joins your party!
+## Note: Log incidents and rate party members. Get notified when a ninja joins your party! Share your incidents with friends and expand your own ninja database.
 ## Author: Robin De Schepper
 ## Version: 0.1
+## SavedVariables: FlareDB
 
 embeds.xml
 

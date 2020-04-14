@@ -1,43 +1,28 @@
-Flare = LibStub("AceAddon-3.0"):NewAddon("Flare", "AceEvent-3.0", "AceConsole-3.0")
-myMessageVar = 10
-
-function Flare:OnInitialize()
-  -- Code that you want to run when the addon is first loaded goes here.
-  Flare:Print("Initialized!")
-end
-
-function Flare:OnEnable()
-    -- Called when the addon is enabled
-    Flare:Print("Enabled!")
-end
-
-function Flare:OnDisable()
-    -- Called when the addon is disabled
-    Flare:Print("Disabled!")
-end
+Flare = LibStub("AceAddon-3.0"):NewAddon("Flare", "AceConsole-3.0", "AceComm-3.0", "AceEvent-3.0")
 
 local options = {
     name = "Flare",
     handler = Flare,
     type = 'group',
     args = {
-        msg = {
-            type = 'input',
-            name = 'My Message',
-            desc = 'The message for my addon',
-            set = 'SetMyMessage',
-            get = 'GetMyMessage',
-        },
+
     },
 }
 
-function Flare:GetMyMessage(info)
-    print("Getting my message:", myMessageVar)
-    return myMessageVar
+
+function Flare:OnInitialize()
+    self.db = LibStub("AceDB-3.0"):New("FlareDB");
+    -- Register the options table for the addon with AceConfigRegistry.
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("Flare", options)
+    -- Use the registered table to create an Interface Options GUI for the addon settings.
+    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Flare", "Flare NinjaList");
+    Flare:Print("Initialized!")
 end
 
-function Flare:SetMyMessage(info, input)
-    myMessageVar = input
+function Flare:OnEnable()
+
 end
 
-LibStub("AceConfig-3.0"):RegisterOptionsTable("Flare", options, {"myslash", "myslashtwo"})
+function Flare:OnDisable()
+
+end
