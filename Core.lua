@@ -101,11 +101,13 @@ function Flare:ViewInterfaceFrame()
         return true
     end
     local frame = AceGUI:Create("Frame")
+    self.interfaceFrame = frame
     frame:SetTitle("Flare")
     frame:SetStatusText("De conclusie is duidelijk.")
     frame:SetCallback("OnClose", function(widget)
         AceGUI:Release(widget)
         _G["FlareInterfaceFrame"] = nil
+        self.interfaceFrame = nil
     end)
     frame:SetLayout("List")
     frame:SetHeight(450)
@@ -151,12 +153,16 @@ function Flare:ViewInterfaceFrame()
     scrollwrapper:AddChild(scrollframe)
 
     local reports = self:GetReportsTable()
+    local flare = self
     for report_id in pairs(reports) do
         local report = reports[report_id]
         local reportLabel = AceGUI:Create("InteractiveLabel")
         reportLabel:SetFullWidth(true)
         local text = self:GetReportLabelText(report)
         reportLabel:SetText(text)
+        reportLabel:SetCallback("OnEnter", function() SetCursor("INSPECT_CURSOR") end)
+        reportLabel:SetCallback("OnLeave", function() SetCursor(nil) end)
+        reportLabel:SetCallback("OnClick", function() flare:ViewReportFrame("view", {report.player, report}, true) end)
         scrollframe:AddChild(reportLabel)
     end
 end
@@ -186,7 +192,7 @@ function Flare:HandleCommand(args)
     end
 end
 
-function Flare:ViewReportFrame(action, args)
+function Flare:ViewReportFrame(action, args, viewing)
     if self.reportFrame then
         return true
     end
@@ -195,14 +201,29 @@ function Flare:ViewReportFrame(action, args)
         player=player,
         category="ninja",
     }
+    if viewing then
+        report = args[2]
+    end
 
     local frame = AceGUI:Create("Window")
-    frame:SetTitle("Flare - Create report")
-    frame:SetHeight(355)
+    if viewing then
+        frame:SetTitle("Flare - Viewing report")
+    else
+        frame:SetTitle("Flare - Create report")
+    end
+    local height = 355
+    if viewing and report.category ~= "ninja" then
+        height = 330
+    end
+    frame:SetHeight(height)
     frame:SetWidth(200)
     frame:EnableResize(false)
     frame:SetLayout("Flow")
-    frame:SetPoint("CENTER", 200, 0)
+    if viewing then
+        frame:SetPoint("TOPLEFT", self.interfaceFrame.frame, "TOPRIGHT", 0, 0)
+    else
+        frame:SetPoint("CENTER", 200, 0)
+    end
     frame:SetCallback("OnClose", function(widget)
         self.reportFrame = nil
         widget:Release()
@@ -226,17 +247,19 @@ function Flare:ViewReportFrame(action, args)
 
     local ninjaRadio = AceGUI:Create("CheckBox")
     ninjaRadio:SetLabel("Ninja")
-    ninjaRadio:SetValue(true)
+    ninjaRadio:SetValue(report.category == "ninja")
     ninjaRadio:SetType("radio")
     frame:AddChild(ninjaRadio)
 
     local rudeRadio = AceGUI:Create("CheckBox")
     rudeRadio:SetLabel("Rude")
+    rudeRadio:SetValue(report.category == "rude")
     rudeRadio:SetType("radio")
     frame:AddChild(rudeRadio)
 
     local unskilledRadio = AceGUI:Create("CheckBox")
     unskilledRadio:SetLabel("Unskilled")
+    unskilledRadio:SetValue(report.category == "unskilled")
     unskilledRadio:SetType("radio")
     frame:AddChild(unskilledRadio)
 
@@ -280,18 +303,38 @@ function Flare:ViewReportFrame(action, args)
     end)
     frame:AddChild(commentBox)
 
-    local reportButton = AceGUI:Create("Button")
-    reportButton:SetRelativeWidth(1.0)
-    reportButton:SetText("Report")
-    frame:AddChild(reportButton)
+    if not viewing then
+        local reportButton = AceGUI:Create("Button")
+        reportButton:SetRelativeWidth(1.0)
+        reportButton:SetText("Report")
+        frame:AddChild(reportButton)
 
-    reportButton:SetCallback("OnClick", function()
-        Flare:CreateReport(report)
-        frame:Hide()
-    end)
+        reportButton:SetCallback("OnClick", function()
+            Flare:CreateReport(report)
+            frame:Hide()
+        end)
+    elseif report.category == "ninja" then
+        local showItemButton = AceGUI:Create("Button")
+        showItemButton:SetRelativeWidth(1.0)
+        showItemButton:SetText("Show item")
+        frame:AddChild(showItemButton)
 
+        showItemButton:SetCallback("OnClick", function()
+            Flare:Print("On "..report.timestamp.." "..report.player.." ninja'd: "..report.item)
+        end)
+    end
+
+    if viewing then
+        playerDropDown:SetDisabled(true)
+        ninjaRadio:SetDisabled(true)
+        rudeRadio:SetDisabled(true)
+        unskilledRadio:SetDisabled(true)
+        itemBox:SetDisabled(true)
+        itemBox:SetText(report.item)
+        commentBox:SetDisabled(true)
+        commentBox:SetText(report.comment)
+    end
     self.reportFrame = frame
-
 end
 
 function Flare:CreateReport(report)
