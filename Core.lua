@@ -134,6 +134,12 @@ function Flare:ViewInterfaceFrame()
     clearbutton:SetWidth(80)
     topgroup:AddChild(clearbutton)
 
+    local tableHeading = AceGUI:Create("Heading")
+    tableHeading:SetText("Reports")
+    tableHeading:SetFullWidth(true)
+    tableHeading:SetHeight(20)
+    topgroup:AddChild(tableHeading)
+
     local scrollwrapper = AceGUI:Create("SimpleGroup")
     scrollwrapper:SetFullWidth(true)
     scrollwrapper:SetHeight(300)
