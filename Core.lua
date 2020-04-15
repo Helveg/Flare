@@ -97,13 +97,14 @@ function Flare:OnDisable()
 end
 
 function Flare:ViewInterfaceFrame()
+    local flare = self
     if _G["FlareInterfaceFrame"] ~= nil then
         return true
     end
     local frame = AceGUI:Create("Frame")
     self.interfaceFrame = frame
     frame:SetTitle("Flare")
-    frame:SetStatusText("De conclusie is duidelijk.")
+    frame:SetStatusText("Small Indie Addon Company.")
     frame:SetCallback("OnClose", function(widget)
         AceGUI:Release(widget)
         _G["FlareInterfaceFrame"] = nil
@@ -136,6 +137,17 @@ function Flare:ViewInterfaceFrame()
     clearbutton:SetWidth(80)
     topgroup:AddChild(clearbutton)
 
+    local reportbutton = AceGUI:Create("Button")
+    reportbutton:SetText("Report")
+    reportbutton:SetWidth(80)
+    topgroup:AddChild(reportbutton)
+    reportbutton:SetCallback("OnClick", function()
+        if flare.reportFrame then
+            flare.reportFrame:Hide()
+        end
+        Flare:ViewReportFrame("report", {editbox:GetText()})
+    end)
+
     local tableHeading = AceGUI:Create("Heading")
     tableHeading:SetText("Reports")
     tableHeading:SetFullWidth(true)
@@ -153,7 +165,6 @@ function Flare:ViewInterfaceFrame()
     scrollwrapper:AddChild(scrollframe)
 
     local reports = self:GetReportsTable()
-    local flare = self
     for report_id in pairs(reports) do
         local report = reports[report_id]
         local reportLabel = AceGUI:Create("InteractiveLabel")
@@ -162,7 +173,12 @@ function Flare:ViewInterfaceFrame()
         reportLabel:SetText(text)
         reportLabel:SetCallback("OnEnter", function() SetCursor("INSPECT_CURSOR") end)
         reportLabel:SetCallback("OnLeave", function() SetCursor(nil) end)
-        reportLabel:SetCallback("OnClick", function() flare:ViewReportFrame("view", {report.player, report}, true) end)
+        reportLabel:SetCallback("OnClick", function()
+            if flare.reportFrame then
+                flare.reportFrame:Hide()
+            end
+            flare:ViewReportFrame("view", {report.player, report}, true)
+        end)
         scrollframe:AddChild(reportLabel)
     end
 end
@@ -219,7 +235,7 @@ function Flare:ViewReportFrame(action, args, viewing)
     frame:SetWidth(200)
     frame:EnableResize(false)
     frame:SetLayout("Flow")
-    if viewing then
+    if self.interfaceFrame then
         frame:SetPoint("TOPLEFT", self.interfaceFrame.frame, "TOPRIGHT", 0, 0)
     else
         frame:SetPoint("CENTER", 200, 0)
