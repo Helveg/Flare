@@ -168,6 +168,10 @@ end
 
 function Flare:GetGroupMemberNames()
 
+function Flare:PrintMsg(msg)
+    self:Print("\124cFF00FFCC\124Hitem:19:0:0:0:0:0 :0: \124h" .."Flare: ".. "\124h\124r" .. msg)
+end
+
 function Flare:GetSendFriends()
     if self.db.global.broadcast_report.friends == nil then
         return true
