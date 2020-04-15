@@ -16,6 +16,8 @@ local options = {
     },
 }
 
+Flare:RegisterChatCommand("flare", "HandleCommand")
+Flare:RegisterEvent("GROUP_ROSTER_CHANGED")
 
 function Flare:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("FlareDB");
@@ -87,4 +89,8 @@ function Flare:ViewInterfaceFrame()
         rubendidit:SetText("Ruben is ne vuile ninja")
         scrollframe:AddChild(rubendidit)
     end
+end
+
+function Flare:GROUP_ROSTER_CHANGED()
+    print("Flare: Group roster changed!")
 end
