@@ -191,7 +191,7 @@ end
 
 function Flare:GetReportLabelText(report)
     local text = "["..report.category.."] "
-    if report.category == "ninja" then
+    if report.category == "ninja" and report.item and #report.item > 0 then
         return text..report.player.." ninja'd "..report.item.." @ "..report.timestamp
     end
     return text..report.player.." @ "..report.timestamp
@@ -362,6 +362,8 @@ end
 function Flare:CreateReport(report)
     report.timestamp = date("%y-%m-%d %H:%M:%S")
     report.id = uuid.getv4()
+    report.item = report.item or ""
+    report.comment = report.comment or ""
     local reports = self:GetReportsTable()
     reports[report.id] = report
     self:StoreReportsTable(reports)
