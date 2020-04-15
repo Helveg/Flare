@@ -150,11 +150,23 @@ function Flare:ViewInterfaceFrame()
     scrollframe:SetLayout("List")
     scrollwrapper:AddChild(scrollframe)
 
-    for i = 1, 100 do
-        local rubendidit = AceGUI:Create("Label")
-        rubendidit:SetText("Ruben is ne vuile ninja")
-        scrollframe:AddChild(rubendidit)
+    local reports = self:GetReportsTable()
+    for report_id in pairs(reports) do
+        local report = reports[report_id]
+        local reportLabel = AceGUI:Create("InteractiveLabel")
+        reportLabel:SetFullWidth(true)
+        local text = self:GetReportLabelText(report)
+        reportLabel:SetText(text)
+        scrollframe:AddChild(reportLabel)
     end
+end
+
+function Flare:GetReportLabelText(report)
+    local text = "["..report.category.."] "
+    if report.category == "ninja" then
+        return text..report.player.." ninja'd "..report.item.." @ "..report.timestamp
+    end
+    return text..report.player.." @ "..report.timestamp
 end
 
 function Flare:HandleCommand(args)
