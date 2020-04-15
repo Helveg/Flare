@@ -1,4 +1,4 @@
-## Interface: 11403
+## Interface: 11304
 ## Title: Flare NinjaList
 ## Note: Log incidents and rate party members. Get notified when a ninja joins your party! Share your incidents with friends and expand your own ninja database.
 ## Author: Robin De Schepper
