@@ -8,10 +8,10 @@ local options = {
     type = 'group',
     args = {
         view = {
-          name = "View list",
+          name = "Open Flare",
           desc = "View the NinjaList interface",
           type = "execute",
-          func = "ViewInterface"
+          func = "ViewInterfaceFrame"
         }
     },
 }
@@ -34,7 +34,7 @@ function Flare:OnDisable()
 
 end
 
-function Flare:ViewInterface()
+function Flare:ViewInterfaceFrame()
     if _G["FlareInterfaceFrame"] ~= nil then
         return true
     end
