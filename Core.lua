@@ -22,7 +22,7 @@ Flare:RegisterEvent("GROUP_ROSTER_CHANGED")
 function Flare:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("FlareDB");
     -- Register the options table for the addon with AceConfigRegistry.
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("Flare", options, {'flare'})
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("Flare", options, {'flarecfg'})
     -- Use the registered table to create an Interface Options GUI for the addon settings.
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Flare", "Flare NinjaList");
     Flare:Print("Initialized!")
