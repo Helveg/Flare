@@ -164,7 +164,7 @@ end
 
 function Flare:ViewRatingFrame(args)
     local player = args[1]
-    self:PrintMsg("Rating player: " .. player)
+    self:Print("Rating player: " .. player)
 end
 
 function Flare:PartyCheck()
@@ -196,10 +196,6 @@ end
 function Flare:OnPlayerLeftParty(player)
     self:Print(player.name .. " left the party. 0 known incidents")
     self.partyMembers[player.name] = nil
-end
-
-function Flare:PrintMsg(msg)
-    self:Print("\124cFF00FFCC\124Hitem:19:0:0:0:0:0 :0: \124h" .."Flare: ".. "\124h\124r" .. msg)
 end
 
 function Flare:GetSendFriends()
