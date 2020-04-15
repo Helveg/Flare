@@ -174,8 +174,8 @@ function Flare:HandleCommand(args)
     local action = args[1]
     table.remove(args, 1)
     local actions = {
-        rate = Flare.ViewRatingFrame,
-        report = Flare.ViewRatingFrame,
+        rate = Flare.ViewReportFrame,
+        report = Flare.ViewReportFrame,
         view = Flare.ViewInterfaceFrame
     }
     if action == nil then
@@ -186,7 +186,7 @@ function Flare:HandleCommand(args)
     end
 end
 
-function Flare:ViewRatingFrame(action, args)
+function Flare:ViewReportFrame(action, args)
     if self.reportFrame then
         return true
     end
