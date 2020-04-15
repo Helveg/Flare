@@ -1,6 +1,7 @@
 Flare = LibStub("AceAddon-3.0"):NewAddon("Flare", "AceConsole-3.0", "AceComm-3.0", "AceEvent-3.0")
 
 local AceGUI = LibStub("AceGUI-3.0")
+local uuid = LibStub("UUID")
 
 local options = {
     name = "Flare",
