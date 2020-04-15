@@ -91,6 +91,27 @@ function Flare:ViewInterfaceFrame()
     end
 end
 
+function Flare:HandleCommand(args)
+    args = {self:GetArgs(args, 100)}
+    local action = args[1]
+    table.remove(args, 1)
+    local actions = {
+        rate = Flare:ViewRatingFrame
+    }
+    if actions[action] ~= nil then
+        actions[action](args)
+    end
+end
+
+function Flare:ViewRatingFrame(args)
+    local player = args[1]
+    print("Flare: Rating player", player)
+end
+
+function Flare:GetGroupMemberNames()
+
+end
+
 function Flare:GROUP_ROSTER_CHANGED()
     print("Flare: Group roster changed!")
 end
