@@ -283,10 +283,19 @@ function Flare:ViewRatingFrame(action, args)
 end
 
 function Flare:CreateReport(report)
-    print("Making report")
-    for k in pairs(report) do
-        print("Report attr ", k, ":", report[k])
-    end
+    report.timestamp = date("%y-%m-%d %H:%M:%S")
+    report.id = uuid.getv4()
+    local reports = self:GetReportsTable()
+    reports[report.id] = report
+    self:StoreReportsTable(reports)
+end
+
+function Flare:GetReportsTable()
+    return self.db.realm.reports or {}
+end
+
+function Flare:StoreReportsTable(reports)
+    self.db.realm.reports = reports
 end
 
 function Flare:IsInParty()
