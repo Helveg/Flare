@@ -84,6 +84,7 @@ function Flare:OnInitialize()
     -- Use the registered table to create an Interface Options GUI for the addon settings.
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Flare", "Flare NinjaList");
     Flare:Print("Initialized!")
+    Flare.partyCheckTicker = C_Timer.NewTicker(1, function() Flare:PartyCheck() end)
 end
 
 function Flare:OnEnable()
@@ -166,7 +167,36 @@ function Flare:ViewRatingFrame(args)
     self:PrintMsg("Rating player: " .. player)
 end
 
-function Flare:GetGroupMemberNames()
+function Flare:PartyCheck()
+    if self.partyMembers == nil then
+        self.partyMembers = {}
+    end
+    local num = GetNumGroupMembers()
+    local stillInParty = {}
+    for i = 1, num - 1 do
+        local player = {uid="party"..i, name=UnitName("party" .. i)}
+        if self.partyMembers[player.name] == nil then
+            self:OnPlayerJoinedParty(player)
+        end
+        stillInParty[player.name] = true
+    end
+    for name in pairs(self.partyMembers) do
+        if stillInParty[name] == nil then
+            local player = self.partyMembers[name]
+            self:OnPlayerLeftParty(player)
+        end
+    end
+end
+
+function Flare:OnPlayerJoinedParty(player)
+    self:Print(player.name .. " joined the party. 0 known incidents")
+    self.partyMembers[player.name] = player
+end
+
+function Flare:OnPlayerLeftParty(player)
+    self:Print(player.name .. " left the party. 0 known incidents")
+    self.partyMembers[player.name] = nil
+end
 
 function Flare:PrintMsg(msg)
     self:Print("\124cFF00FFCC\124Hitem:19:0:0:0:0:0 :0: \124h" .."Flare: ".. "\124h\124r" .. msg)
