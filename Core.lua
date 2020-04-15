@@ -163,11 +163,11 @@ function Flare:HandleCommand(args)
         action = "view"
     end
     if actions[action] ~= nil then
-        actions[action](self, args)
+        actions[action](self, action, args)
     end
 end
 
-function Flare:ViewRatingFrame(args)
+function Flare:ViewRatingFrame(action, args)
     local player = args[1]
     self:Print("Rating player: " .. player)
 end
