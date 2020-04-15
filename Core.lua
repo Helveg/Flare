@@ -168,6 +168,9 @@ function Flare:HandleCommand(args)
 end
 
 function Flare:ViewRatingFrame(action, args)
+    if self.reportFrame then
+        return true
+    end
     local player = args[1]
     local report = {
         player=player,
@@ -176,16 +179,23 @@ function Flare:ViewRatingFrame(action, args)
 
     local frame = AceGUI:Create("Window")
     frame:SetTitle("Flare - Create report")
-    frame:SetHeight(300)
+    frame:SetHeight(355)
     frame:SetWidth(200)
     frame:EnableResize(false)
     frame:SetLayout("Flow")
     frame:SetPoint("CENTER", 200, 0)
+    frame:SetCallback("OnClose", function(widget)
+        self.reportFrame = nil
+        widget:Release()
+    end)
 
     local playerDropDown = AceGUI:Create("Dropdown")
     playerDropDown:SetRelativeWidth(1.0)
     playerDropDown:SetLabel("Player")
     local players = {}
+    if player then
+        players[player] = player
+    end
     for player in pairs(self.partyMembers) do
         players[player] = player
     end
@@ -194,10 +204,6 @@ function Flare:ViewRatingFrame(action, args)
         playerDropDown:SetValue(player)
     end
     frame:AddChild(playerDropDown)
-
-    local categoryHeading = AceGUI:Create("Heading")
-    categoryHeading:SetText("Category")
-    frame:AddChild(categoryHeading)
 
     local ninjaRadio = AceGUI:Create("CheckBox")
     ninjaRadio:SetLabel("Ninja")
@@ -215,10 +221,18 @@ function Flare:ViewRatingFrame(action, args)
     unskilledRadio:SetType("radio")
     frame:AddChild(unskilledRadio)
 
+    local itemBox = AceGUI:Create("EditBox")
+    itemBox:SetLabel("Item")
+    itemBox:SetCallback("OnEnterPressed", function(self, event, value)
+        report.item = value
+    end)
+    frame:AddChild(itemBox)
+
     ninjaRadio:SetCallback("OnValueChanged", function(self, event, value)
         if value then
             rudeRadio:SetValue(false)
             unskilledRadio:SetValue(false)
+            itemBox:SetDisabled(false)
             report.category = "ninja"
         end
     end)
@@ -226,6 +240,7 @@ function Flare:ViewRatingFrame(action, args)
         if value then
             ninjaRadio:SetValue(false)
             unskilledRadio:SetValue(false)
+            itemBox:SetDisabled(true)
             report.category = "rude"
         end
     end)
@@ -233,12 +248,17 @@ function Flare:ViewRatingFrame(action, args)
         if value then
             ninjaRadio:SetValue(false)
             rudeRadio:SetValue(false)
+            itemBox:SetDisabled(true)
             report.category = "unskilled"
         end
     end)
 
     local commentBox = AceGUI:Create("MultiLineEditBox")
     commentBox:SetHeight(100)
+    commentBox:SetLabel("Comment")
+    commentBox:SetCallback("OnEnterPressed", function(self, event, value)
+        report.comment = value
+    end)
     frame:AddChild(commentBox)
 
     local reportButton = AceGUI:Create("Button")
@@ -246,8 +266,24 @@ function Flare:ViewRatingFrame(action, args)
     reportButton:SetText("Report")
     frame:AddChild(reportButton)
 
+    reportButton:SetCallback("OnClick", function()
+        Flare:CreateReport(report)
+        frame:Hide()
+    end)
+
     self.reportFrame = frame
 
+end
+
+function Flare:CreateReport(report)
+    print("Making report")
+    for k in pairs(report) do
+        print("Report attr ", k, ":", report[k])
+    end
+end
+
+function Flare:IsInParty()
+    return GetNumGroupMembers() > 0
 end
 
 function Flare:PartyCheck()
