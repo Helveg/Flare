@@ -76,7 +76,6 @@ local options = {
 }
 
 Flare:RegisterChatCommand("flare", "HandleCommand")
-Flare:RegisterEvent("GROUP_ROSTER_CHANGED")
 
 function Flare:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("FlareDB");
@@ -155,16 +154,16 @@ function Flare:HandleCommand(args)
     local action = args[1]
     table.remove(args, 1)
     local actions = {
-        rate = Flare:ViewRatingFrame
+        rate = Flare.ViewRatingFrame
     }
     if actions[action] ~= nil then
-        actions[action](args)
+        actions[action](self, args)
     end
 end
 
 function Flare:ViewRatingFrame(args)
     local player = args[1]
-    print("Flare: Rating player", player)
+    self:PrintMsg("Rating player: " .. player)
 end
 
 function Flare:GetGroupMemberNames()
