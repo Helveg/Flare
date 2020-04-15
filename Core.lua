@@ -395,9 +395,62 @@ function Flare:PartyCheck()
 end
 
 function Flare:OnPlayerJoinedParty(player)
-    self:Print(player.name .. " joined the party. 0 known incidents")
+    Flare:CheckPlayer(player)
     self.partyMembers[player.name] = player
 end
+
+function Flare:CheckPlayer(player)
+    local reports = self:GetReportsTable()
+    local marks = {}
+    local player_reports = {}
+    for k in pairs(reports) do
+        local report = reports[k]
+        if report.player == player.name then
+            table.insert(player_reports, report)
+            marks[report.category] = (marks[report.category] or 0) + 1
+        end
+    end
+    if #player_reports > 0 then
+        self:Warn(player, player_reports, marks)
+    end
+end
+
+function Flare:Warn(player, reports, marks)
+    local ranks = {
+        [0]="is possibly an uncool teammate",
+        [2]="is someone to avoid",
+        [3]="is a scumbag",
+        [4]="is a degenerate",
+        [5]="is absolutely deplorable and should get his mouth fucked with a taser"
+    }
+    local rank = ranks[0]
+    for k in pairs(ranks) do
+        if #reports >= k then
+            rank = ranks[k]
+        end
+    end
+    local message = "Warning! My Flare blacklist addon has detected that "..player.name.." "..rank.."! Marked as: "
+    message = message..get_marks_string(marks)
+    SendChatMessage(message, "PARTY", "COMMON")
+end
+
+function get_marks_string(marks)
+    local categories = {}
+    for k in pairs(marks) do
+        table.insert(categories, k)
+    end
+    local m = categories[1].." (x"..marks[categories[1]]..")"
+    if #categories < 2 then
+        return m
+    end
+    local i = 2
+    while i < #categories do
+         m = m..", "..categories[i].." (x"..marks[categories[i]]..")"
+         i = i + 1
+    end
+    return m.." and "..categories[i].." (x"..marks[categories[i]]..")"
+end
+
 
 function Flare:OnPlayerLeftParty(player)
     self:Print(player.name .. " left the party. 0 known incidents")
