@@ -161,26 +161,32 @@ function Flare:ViewInterfaceFrame()
     frame:AddChild(scrollwrapper)
 
     local scrollframe = AceGUI:Create("ScrollFrame")
+    self.scrollframe = scrollframe
     scrollframe:SetLayout("List")
     scrollwrapper:AddChild(scrollframe)
 
     local reports = self:GetReportsTable()
     for report_id in pairs(reports) do
         local report = reports[report_id]
-        local reportLabel = AceGUI:Create("InteractiveLabel")
-        reportLabel:SetFullWidth(true)
-        local text = self:GetReportLabelText(report)
-        reportLabel:SetText(text)
-        reportLabel:SetCallback("OnEnter", function() SetCursor("INSPECT_CURSOR") end)
-        reportLabel:SetCallback("OnLeave", function() SetCursor(nil) end)
-        reportLabel:SetCallback("OnClick", function()
-            if flare.reportFrame then
-                flare.reportFrame:Hide()
-            end
-            flare:ViewReportFrame("view", {report.player, report}, true)
-        end)
-        scrollframe:AddChild(reportLabel)
+        self:AddReportLabel(scrollframe, report)
     end
+end
+
+function Flare:AddReportLabel(scrollframe, report)
+    local flare = self
+    local reportLabel = AceGUI:Create("InteractiveLabel")
+    reportLabel:SetFullWidth(true)
+    local text = self:GetReportLabelText(report)
+    reportLabel:SetText(text)
+    reportLabel:SetCallback("OnEnter", function() SetCursor("INSPECT_CURSOR") end)
+    reportLabel:SetCallback("OnLeave", function() SetCursor(nil) end)
+    reportLabel:SetCallback("OnClick", function()
+        if flare.reportFrame then
+            flare.reportFrame:Hide()
+        end
+        flare:ViewReportFrame("view", {report.player, report}, true)
+    end)
+    scrollframe:AddChild(reportLabel)
 end
 
 function Flare:GetReportLabelText(report)
@@ -359,6 +365,9 @@ function Flare:CreateReport(report)
     local reports = self:GetReportsTable()
     reports[report.id] = report
     self:StoreReportsTable(reports)
+    if self.interfaceFrame then
+        self:AddReportLabel(self.scrollframe, report)
+    end
 end
 
 function Flare:GetReportsTable()
