@@ -12,6 +12,65 @@ local options = {
           desc = "View the NinjaList interface",
           type = "execute",
           func = "ViewInterfaceFrame"
+        },
+        send = {
+            name = "Broadcast reports",
+            type = "group",
+            desc = "Automatically send your new reports to certain online people.",
+            args = {
+                friends = {
+                    name = "Friends",
+                    type = "toggle",
+                    desc = "Automatically send new reports to all online friends",
+                    get = "GetSendFriends",
+                    set = "SetSendFriends"
+                },
+                guild = {
+                    name = "Guild",
+                    type = "toggle",
+                    desc = "Automatically send new reports to all online guildmembers",
+                    get = "GetSendGuild",
+                    set = "SetSendGuild"
+                },
+                group = {
+                    name = "Group",
+                    type = "toggle",
+                    desc = "Automatically send new reports to your group members, except for the target",
+                    get = "GetSendGroup",
+                    set = "SetSendGroup"
+                },
+            }
+        },
+        receive = {
+            name = "Receive reports",
+            type = "group",
+            desc = "Automatically send your new reports to certain online people.",
+            args = {
+                friends = {
+                    name = "Friends",
+                    type = "select",
+                    desc = "Automatically receive new reports from friends",
+                    values = {always="Always", popup="Ask in popup", command="Ask in chat", never="Never"},
+                    get = "GetReceiveFriends",
+                    set = "SetReceiveFriends"
+                },
+                guild = {
+                    name = "Guild",
+                    type = "select",
+                    desc = "Automatically receive new reports from guildmembers",
+                    values = {always="Always", popup="Ask in popup", command="Ask in chat", never="Never"},
+                    get = "GetReceiveGuild",
+                    set = "SetReceiveGuild"
+                },
+                group = {
+                    name = "Group",
+                    type = "select",
+                    desc = "Automatically receive new reports from group members",
+                    values = {always="Always", popup="Ask in popup", command="Ask in chat", never="Never"},
+                    get = "GetReceiveGroup",
+                    set = "SetReceiveGroup"
+                },
+            }
         }
     },
 }
@@ -110,8 +169,68 @@ end
 
 function Flare:GetGroupMemberNames()
 
+function Flare:GetSendFriends()
+    if self.db.global.broadcast_report.friends == nil then
+        return true
+    end
+    return self.db.global.broadcast_report.friends
 end
 
-function Flare:GROUP_ROSTER_CHANGED()
-    print("Flare: Group roster changed!")
+function Flare:SetSendFriends(info, v)
+    self.db.global.broadcast_report.friends = v
+end
+
+function Flare:GetSendGuild()
+    if self.db.global.broadcast_report.guild == nil then
+        return true
+    end
+    return self.db.global.broadcast_report.guild
+end
+
+function Flare:SetSendGuild(info, v)
+    self.db.global.broadcast_report.guild = v
+end
+
+function Flare:GetSendGroup()
+    if self.db.global.broadcast_report.group == nil then
+        return true
+    end
+    return self.db.global.broadcast_report.group
+end
+
+function Flare:SetSendGroup(info, v)
+    self.db.global.broadcast_report.group = v
+end
+
+function Flare:GetReceiveFriends()
+    if self.db.global.accept_report.friends == nil then
+        return "always"
+    end
+    return self.db.global.accept_report.friends
+end
+
+function Flare:SetReceiveFriends(info, v)
+    self.db.global.accept_report.friends = v
+end
+
+function Flare:GetReceiveGuild()
+    if self.db.global.accept_report.guild == nil then
+        return "always"
+    end
+    return self.db.global.accept_report.guild
+end
+
+function Flare:SetReceiveGuild(info, v)
+    self.db.global.accept_report.guild = v
+end
+
+function Flare:GetReceiveGroup()
+    if self.db.global.accept_report.group == nil then
+        return "popup"
+    end
+    return self.db.global.accept_report.group
+end
+
+function Flare:SetReceiveGroup(info, v)
+    self.db.global.accept_report.group = v
 end
