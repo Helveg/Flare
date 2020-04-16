@@ -427,20 +427,13 @@ function Flare:CheckPlayer(player)
 end
 
 function Flare:Warn(player, reports, marks)
-    local ranks = {
-        [0]="is possibly an uncool teammate",
-        [2]="is someone to avoid",
-        [3]="is a scumbag",
-        [4]="is a degenerate",
-        [5]="is absolutely deplorable and should get his mouth fucked with a taser"
-    }
     local rank = ranks[0]
     for k in pairs(ranks) do
         if #reports >= k then
             rank = ranks[k]
         end
     end
-    local message = "Warning! My Flare blacklist addon has detected that "..player.name.." "..rank.."! Marked as: "
+    local message = "Warning! My Flare blacklist addon has detected "..player.name.." is marked as: "
     message = message..get_marks_string(marks)
     SendChatMessage(message, "PARTY", "COMMON")
 end
@@ -464,7 +457,6 @@ end
 
 
 function Flare:OnPlayerLeftParty(player)
-    self:Print(player.name .. " left the party. 0 known incidents")
     self.partyMembers[player.name] = nil
 end
 
