@@ -76,7 +76,22 @@ local options = {
     },
 }
 
-Flare:RegisterChatCommand("flare", "HandleCommand")
+local bunnyLDB = LibStub("LibDataBroker-1.1"):NewDataObject("Flare", {
+type = "data source",
+text = "Flare",
+icon = "Interface\\AddOns\\Flare\\Icons\\flare.blp",
+OnClick = function() Flare:ViewInterfaceFrame() end,
+})
+local icon = LibStub("LibDBIcon-1.0")
+
+function Flare:CommandTheBunnies()
+    self.db2.profile.minimap.hide = not self.db2.profile.minimap.hide
+    if self.db2.profile.minimap.hide then
+        icon:Hide("Flare")
+    else
+        icon:Show("Flare")
+    end
+end
 
 function Flare:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("FlareDB");
@@ -84,8 +99,11 @@ function Flare:OnInitialize()
     LibStub("AceConfig-3.0"):RegisterOptionsTable("Flare", options, {'flarecfg'})
     -- Use the registered table to create an Interface Options GUI for the addon settings.
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Flare", "Flare NinjaList");
-    Flare:Print("Initialized!")
     Flare.partyCheckTicker = C_Timer.NewTicker(1, function() Flare:PartyCheck() end)
+    self.db2 = LibStub("AceDB-3.0"):New("BunniesDB", { profile = { minimap = { hide = false, }, }, })
+    icon:Register("Flare", bunnyLDB, self.db2.profile.minimap)
+    self:RegisterChatCommand("bunnies", "CommandTheBunnies")
+    self:RegisterChatCommand("flare", "HandleCommand")
 end
 
 function Flare:OnEnable()
@@ -246,7 +264,10 @@ function Flare:ViewReportFrame(action, args, viewing)
     else
         frame:SetPoint("CENTER", 200, 0)
     end
+    _G["FlareReportFrame"] = frame.frame
+    tinsert(UISpecialFrames, "FlareReportFrame")
     frame:SetCallback("OnClose", function(widget)
+        _G["FlareReportFrame"] = nil
         self.reportFrame = nil
         widget:Release()
     end)
