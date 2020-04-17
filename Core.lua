@@ -422,7 +422,7 @@ function Flare:PartyCheck()
         end
     else
         -- Definitly in a raid
-        for i = 1, 5 do
+        for i = 1, 4 do
             self.partyButtons[i]:Hide()
         end
     end
@@ -435,7 +435,7 @@ end
 
 function Flare:OnPlayerLeftParty(player)
     self.partyMembers[player.name] = nil
-    for i = max(1, GetNumGroupMembers()), 5 do
+    for i = max(1, GetNumGroupMembers()), 4 do
         self.partyButtons[i]:Hide()
     end
 end
@@ -488,9 +488,10 @@ end
 function Flare:CreatePartyButtons()
     local flare = self
     self.partyButtons = {}
-    for i = 1, 5 do
-        local f = CreateFrame("Frame",nil,UIParent)
-        f:SetFrameStrata("BACKGROUND")
+    for i = 1, 4 do
+        local f = CreateFrame("Frame", nil, _G["PartyMemberFrame"..i])
+        f:SetPoint("TOPLEFT", 0, 0)
+        f:SetFrameStrata("HIGH")
         f:SetWidth(16) -- Set these to whatever height/width is needed
         f:SetHeight(16) -- for your Texture
 
@@ -507,7 +508,6 @@ function Flare:CreatePartyButtons()
                 flare:ViewReportFrame("report", {UnitName("party" .. i)})
             end
         end)
-        f:SetPoint("TOPLEFT", 145, -140 - 62 * (i-1))
         f:Hide()
         table.insert(self.partyButtons, f)
     end
