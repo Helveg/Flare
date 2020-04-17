@@ -84,15 +84,6 @@ OnClick = function() Flare:ViewInterfaceFrame() end,
 })
 local icon = LibStub("LibDBIcon-1.0")
 
-function Flare:CommandTheBunnies()
-    self.db2.profile.minimap.hide = not self.db2.profile.minimap.hide
-    if self.db2.profile.minimap.hide then
-        icon:Hide("Flare")
-    else
-        icon:Show("Flare")
-    end
-end
-
 function Flare:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("FlareDB");
     -- Register the options table for the addon with AceConfigRegistry.
@@ -102,7 +93,7 @@ function Flare:OnInitialize()
     Flare.partyCheckTicker = C_Timer.NewTicker(1, function() Flare:PartyCheck() end)
     self.db2 = LibStub("AceDB-3.0"):New("BunniesDB", { profile = { minimap = { hide = false, }, }, })
     icon:Register("Flare", bunnyLDB, self.db2.profile.minimap)
-    self:RegisterChatCommand("bunnies", "CommandTheBunnies")
+    self:CreatePartyButtons()
     self:RegisterChatCommand("flare", "HandleCommand")
 end
 
@@ -412,7 +403,7 @@ function Flare:PartyCheck()
     local num = GetNumGroupMembers()
     local stillInParty = {}
     for i = 1, num - 1 do
-        local player = {uid="party"..i, name=UnitName("party" .. i)}
+        local player = {name=UnitName("party" .. i)}
         if self.partyMembers[player.name] == nil then
             self:OnPlayerJoinedParty(player)
         end
@@ -424,11 +415,29 @@ function Flare:PartyCheck()
             self:OnPlayerLeftParty(player)
         end
     end
+    if GetNumGroupMembers() < 6 then
+        -- Probably in a regular party
+        for i = 1, GetNumGroupMembers() - 1 do
+            self.partyButtons[i]:Show()
+        end
+    else
+        -- Definitly in a raid
+        for i = 1, 5 do
+            self.partyButtons[i]:Hide()
+        end
+    end
 end
 
 function Flare:OnPlayerJoinedParty(player)
     Flare:CheckPlayer(player)
     self.partyMembers[player.name] = player
+end
+
+function Flare:OnPlayerLeftParty(player)
+    self.partyMembers[player.name] = nil
+    for i = max(1, GetNumGroupMembers()), 5 do
+        self.partyButtons[i]:Hide()
+    end
 end
 
 function Flare:CheckPlayer(player)
@@ -476,9 +485,32 @@ function get_marks_string(marks)
     return m.." and "..categories[i].." (x"..marks[categories[i]]..")"
 end
 
+function Flare:CreatePartyButtons()
+    local flare = self
+    self.partyButtons = {}
+    for i = 1, 5 do
+        local f = CreateFrame("Frame",nil,UIParent)
+        f:SetFrameStrata("BACKGROUND")
+        f:SetWidth(16) -- Set these to whatever height/width is needed
+        f:SetHeight(16) -- for your Texture
 
-function Flare:OnPlayerLeftParty(player)
-    self.partyMembers[player.name] = nil
+        local t = f:CreateTexture(nil,"OVERLAY")
+        t:SetTexture("Interface\\AddOns\\Flare\\Icons\\report.blp")
+        t:SetAllPoints(f)
+        f.texture = t
+
+        f:SetScript("OnMouseDown", function (self, button)
+            if button=='LeftButton' then
+                if flare.reportFrame then
+                    flare.reportFrame:Hide()
+                end
+                flare:ViewReportFrame("report", {UnitName("party" .. i)})
+            end
+        end)
+        f:SetPoint("TOPLEFT", 145, -140 - 62 * (i-1))
+        f:Hide()
+        table.insert(self.partyButtons, f)
+    end
 end
 
 function Flare:GetSendFriends()
