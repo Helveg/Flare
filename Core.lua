@@ -415,17 +415,6 @@ function Flare:PartyCheck()
             self:OnPlayerLeftParty(player)
         end
     end
-    if GetNumGroupMembers() < 6 then
-        -- Probably in a regular party
-        for i = 1, GetNumGroupMembers() - 1 do
-            self.partyButtons[i]:Show()
-        end
-    else
-        -- Definitly in a raid
-        for i = 1, 4 do
-            self.partyButtons[i]:Hide()
-        end
-    end
 end
 
 function Flare:OnPlayerJoinedParty(player)
@@ -435,9 +424,6 @@ end
 
 function Flare:OnPlayerLeftParty(player)
     self.partyMembers[player.name] = nil
-    for i = max(1, GetNumGroupMembers()), 4 do
-        self.partyButtons[i]:Hide()
-    end
 end
 
 function Flare:CheckPlayer(player)
@@ -508,7 +494,7 @@ function Flare:CreatePartyButtons()
                 flare:ViewReportFrame("report", {UnitName("party" .. i)})
             end
         end)
-        f:Hide()
+        f:Show()
         table.insert(self.partyButtons, f)
     end
 end
