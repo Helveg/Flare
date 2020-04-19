@@ -443,15 +443,9 @@ function Flare:CheckPlayer(player)
 end
 
 function Flare:Warn(player, reports, marks)
-    local rank = ranks[0]
-    for k in pairs(ranks) do
-        if #reports >= k then
-            rank = ranks[k]
-        end
-    end
-    local message = "Warning! My Flare blacklist addon has detected "..player.name.." is marked as: "
-    message = message..get_marks_string(marks)
-    SendChatMessage(message, "PARTY", "COMMON")
+    local msg = "Flare has detected "..player.name.." is marked as: "
+    msg = msg..get_marks_string(marks)
+    message(msg)
 end
 
 function get_marks_string(marks)
